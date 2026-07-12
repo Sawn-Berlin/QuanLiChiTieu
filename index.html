@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quản lý Chi tiêu</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e1e2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Chi tiêu">
+  
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+  
+  <meta name="description" content="Ứng dụng quản lý chi tiêu cá nhân với tính năng hiển thị 3 khoản đắt nhất theo màu đỏ, cam, vàng">
+  <meta name="keywords" content="chi tiêu, quản lý chi tiêu, tài chính cá nhân">
+  <meta name="author" content="Your Name">
+  
+  <meta property="og:title" content="Quản lý Chi tiêu">
+  <meta property="og:description" content="Ứng dụng quản lý chi tiêu cá nhân với tính năng hiển thị 3 khoản đắt nhất theo màu đỏ, cam, vàng">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="icon-512.png">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <script>
+    // Đăng ký Service Worker để dùng offline
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js')
+          .then(function(registration) {
+            console.log('✅ Service Worker đã đăng ký thành công!');
+          })
+          .catch(function(err) {
+            console.log('❌ Lỗi đăng ký Service Worker:', err);
+          });
+      });
+    }
+  </script>
+  
+  <style>
+    /* Thêm style cho splash screen khi load */
+    .splash-screen {
+      display: none;
+    }
+    
+    /* Tối ưu cho màn hình điện thoại */
+    @media (max-width: 640px) {
+      body {
+        padding: 0.5rem !important;
+      }
+      
+      .card {
+        border-radius: 1.5rem !important;
+        padding: 1rem !important;
+      }
+      
+      input, button {
+        font-size: 16px !important; /* Tránh zoom trên iOS */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="app">
+    <h1>
+      🧾 Chi tiêu
+      <small>đỏ · cam · vàng</small>
+    </h1>
+
+    <div class="input-area">
+      <div class="input-group">
+        <i>📦</i>
+        <input type="text" id="itemName" placeholder="Tên khoản chi" autocomplete="off" inputmode="text">
+      </div>
+      <div class="input-group">
+        <i>💰</i>
+        <input type="number" id="itemPrice" placeholder="Số tiền" min="0" step="1" inputmode="numeric">
+      </div>
+      <button class="btn-add" id="addBtn">➕ Thêm</button>
+    </div>
+
+    <div class="stats-wrap">
+      <div class="stats-title">🏆 3 khoản đắt nhất</div>
+      <div id="topThreeContainer" class="top-three"></div>
+    </div>
+
+    <div class="history">
+      <div class="history-header">
+        <span>📋 Lịch sử chi tiêu</span>
+        <button class="clear-btn" id="clearHistoryBtn">Xóa tất cả</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <div class="footer-note">💾 Dữ liệu lưu tự động trong ứng dụng</div>
+  </div>
+
+  <script src="renderer.js"></script>
+  
+  <script>
+    // Kiểm tra xem đã cài đặt PWA chưa
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('✅ Ứng dụng đang chạy ở chế độ standalone (PWA)');
+      document.querySelector('.footer-note').textContent = '📱 Đang chạy ở chế độ ứng dụng · Dữ liệu lưu tự động';
+    }
+    
+    // Hiển thị hướng dẫn cài đặt nếu chưa cài
+    if (!window.matchMedia('(display-mode: standalone)').matches && 
+        !navigator.standalone && 
+        window.innerWidth < 768) {
+      // Thêm gợi ý cài đặt cho mobile
+      setTimeout(() => {
+        const footer = document.querySelector('.footer-note');
+        if (footer && !footer.innerHTML.includes('Cài đặt')) {
+          footer.innerHTML = '💡 Mở trình đơn (⋮) và chọn "Cài đặt ứng dụng" để dùng offline';
+          footer.style.color = '#8a7a5a';
+          footer.style.fontWeight = '500';
+        }
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
